@@ -77,46 +77,30 @@ jobs:
             return context.payload.ref.replace(/\/?refs\/tags\/v/, '')
           result-encoding: string
 
-      - name: Generate image tag
-        if: github.ref == 'refs/heads/master'
-        uses: actions/github-script@v1
-        id: image_tag
-        with:
-          script: |
-            return ${{ secrets.DOCKER_USERNAME }}/${{ steps.lowercase-repo-name.outputs.lowercase }}:${{ matrix.name }}-latest
-          result-encoding: string
-
-      - name: Generate image tag for release
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: actions/github-script@v1
-        id: image_tag_rel
-        with:
-          script: |
-            return ${{ secrets.DOCKER_USERNAME }}/${{ steps.lowercase-repo-name.outputs.lowercase }}:${{ matrix.name }}-${{steps.version.outputs.result}}
-          result-encoding: string
-
       - name: Build and export
         id: build
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
         run: |
-          export DOCKER_TAG=${{ steps.image_tag.outputs.result }}
+          export DOCKER_TAG="${{ secrets.DOCKER_USERNAME }}/${{ steps.lowercase-repo-name.outputs.lowercase }}:${{ matrix.name }}-latest"
           export PLATFORM="linux/${{ matrix.arch }}"
-          cog build -t "$DOCKER_TAG" --platform="$PLATFORM"
-          docker push "$DOCKER_TAG"
+          cog build -t $DOCKER_TAG
+          docker push $DOCKER_TAG
           export DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $DOCKER_TAG)
           echo "::set-output name=digest::$DIGEST"
 
       - name: Build and export for release
         id: build_rel
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
-          export DOCKER_TAG=${{ steps.image_tag_rel.outputs.result }}
+          export DOCKER_TAG="${{ secrets.DOCKER_USERNAME }}/${{ steps.lowercase-repo-name.outputs.lowercase }}:${{ matrix.name }}-${{steps.version.outputs.result}}"
           export PLATFORM="linux/${{ matrix.arch }}"
-          cog build -t "$DOCKER_TAG" --platform="$PLATFORM"
-          docker push "$DOCKER_TAG"
+          cog build -t $DOCKER_TAG
+          docker push $DOCKER_TAG
           export DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $DOCKER_TAG)
           echo "::set-output name=digest::$DIGEST"
 
       - name: Save digest
-        if: github.ref == 'refs/heads/master'
+        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
         run: echo ${{ steps.build.outputs.digest }} > /tmp/digest.txt
 
       - name: Save release digest
