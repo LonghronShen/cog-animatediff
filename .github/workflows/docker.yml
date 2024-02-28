@@ -33,6 +33,10 @@ jobs:
 
           docker system prune -a -f
 
+          cp -r /var/lib/buildkit ./
+          rm -rf /var/lib/buildkit
+          ln -s ./buildkit /var/lib/buildkit
+
           echo "Free space:"
           df -h
 
