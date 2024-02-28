@@ -28,8 +28,17 @@ jobs:
 
       - name: Install cog & Parepare
         run: |
-          sudo curl -o /usr/bin/cog -L "https://github.com/replicate/cog/releases/latest/download/cog_$(uname -s)_$(uname -m)"
-          sudo chmod +x /usr/bin/cog
+          cd $GOPATH
+          mkdir -p {src,bin,pkg}
+          mkdir -p src/github.com/replicate/
+          cd src/github.com/replicate/
+
+          git clone https://github.com/LonghronShen/cog.git
+          cd cog/
+          go get ./...
+
+          make
+          sudo make install
 
           docker system prune -a -f
 
