@@ -19,17 +19,22 @@ jobs:
         #     name: arm64
 
     steps:
-      - name: Free up disk spaces
-        run: |
-          sudo rm -rf /usr/share/dotnet || true
-          sudo rm -rf /opt/ghc || true
-          sudo rm -rf "/usr/local/share/boost" || true
-          sudo rm -rf "$AGENT_TOOLSDIRECTORY" || true
+      - name: Maximize build space
+        uses: easimon/maximize-build-space@master
+        with:
+          root-reserve-mb: 512
+          swap-size-mb: 1024
+          remove-dotnet: 'true'
 
-      - name: Install cog
+      - name: Install cog & Parepare
         run: |
           sudo curl -o /usr/bin/cog -L "https://github.com/replicate/cog/releases/latest/download/cog_$(uname -s)_$(uname -m)"
           sudo chmod +x /usr/bin/cog
+
+          docker system prune -a -f
+
+          echo "Free space:"
+          df -h
 
       - name: Get lowercase string for the repository name
         id: lowercase-repo-name
