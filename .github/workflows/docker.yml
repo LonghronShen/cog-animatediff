@@ -34,13 +34,13 @@ jobs:
           docker system prune -a -f
 
           if [ -d "/var/lib/buildkit" ]; then
-            cp -r /var/lib/buildkit ../
+            sudo cp -r /var/lib/buildkit ../
             sudo rm -rf /var/lib/buildkit
             sudo ln -s ../buildkit /var/lib/buildkit
           fi
 
           if [ -d "/var/lib/docker" ]; then
-            cp -r /var/lib/docker ../
+            sudo cp -r /var/lib/docker ../
             sudo rm -rf /var/lib/docker
             sudo ln -s ../docker /var/lib/docker
           fi
