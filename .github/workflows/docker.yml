@@ -33,9 +33,13 @@ jobs:
 
           docker system prune -a -f
 
-          cp -r /var/lib/buildkit ./
-          rm -rf /var/lib/buildkit
-          ln -s ./buildkit /var/lib/buildkit
+          cp -r /var/lib/buildkit ../ || mkdir -p ../buildkit
+          rm -rf /var/lib/buildkit || true
+          ln -s ../buildkit /var/lib/buildkit
+
+          cp -r /var/lib/docker ../ || mkdir -p ../docker
+          rm -rf /var/lib/docker || true
+          ln -s ../docker /var/lib/docker
 
           echo "Free space:"
           df -h
