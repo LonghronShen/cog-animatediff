@@ -48,7 +48,7 @@ jobs:
             sudo ln -s "$WORK_DIR/docker" /var/lib/docker
           fi
 
-          systemctl restart docker
+          sudo systemctl restart docker
 
           echo "Free space:"
           df -h
