@@ -39,7 +39,7 @@ jobs:
 
           export COG_VERSION="$(git rev-parse --short HEAD)+dev"
           export COG_BUILD_TIME=$(date +%Y-%m-%dT%H:%M:%S%z)
-          CGO_ENABLED=0 go build -o \
+          CGO_ENABLED=0 go build -o cog \
             -ldflags "-X github.com/replicate/cog/pkg/global.Version=$COG_VERSION -X github.com/replicate/cog/pkg/global.BuildTime=$COG_BUILD_TIME -w" \
             cmd/cog/cog.go
           sudo cp cog /usr/local/bin/
