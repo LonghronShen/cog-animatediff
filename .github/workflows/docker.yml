@@ -26,7 +26,7 @@ jobs:
           swap-size-mb: 1024
           remove-dotnet: 'true'
 
-      - name: Install cog & Parepare
+      - name: Install cog
         run: |
           cd $GOPATH
           mkdir -p {src,bin,pkg}
@@ -37,9 +37,20 @@ jobs:
           cd cog/
           go get ./...
 
-          make
-          sudo make install
+          export COG_VERSION="$(git rev-parse --short HEAD)+dev"
+          export COG_BUILD_TIME=$(date +%Y-%m-%dT%H:%M:%S%z)
+          CGO_ENABLED=0 go build -o \
+            -ldflags "-X github.com/replicate/cog/pkg/global.Version=$COG_VERSION -X github.com/replicate/cog/pkg/global.BuildTime=$COG_BUILD_TIME -w" \
+            cmd/cog/cog.go
+          sudo cp cog /usr/local/bin/
 
+          cd $GOPATH
+          rm -rf src
+          rm -rf bin
+          rm -rf pkg
+
+      - name: Parepare
+        run: |
           docker system prune -a -f
 
           export WORK_DIR=$(pwd)
