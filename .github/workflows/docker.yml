@@ -124,8 +124,7 @@ jobs:
           export PLATFORM="linux/${{ matrix.arch }}"
 
           cd "${{ github.event.repository.name }}"
-          cog build -t $DOCKER_TAG
-          cog push $DOCKER_TAG
+          cog build --push -t $DOCKER_TAG
 
           export DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $DOCKER_TAG)
           echo "::set-output name=digest::$DIGEST"
@@ -138,8 +137,7 @@ jobs:
           export PLATFORM="linux/${{ matrix.arch }}"
 
           cd "${{ github.event.repository.name }}"
-          cog build -t $DOCKER_TAG
-          cog push $DOCKER_TAG
+          cog build --push -t $DOCKER_TAG
 
           export DIGEST=$(docker inspect --format='{{index .RepoDigests 0}}' $DOCKER_TAG)
           echo "::set-output name=digest::$DIGEST"
